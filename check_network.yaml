@@ -1,0 +1,41 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: check-network-connection
+  namespace: infra
+  labels:
+    app: check-network-connection
+spec:
+  selector:
+    matchLabels:
+      app: check-network-connection
+  template:
+    metadata:
+      labels:
+        app: check-network-connection
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: role
+        operator: Equal
+        value: infra
+      containers:
+      - name: check-network-connection
+        image: alantang888/check_api_server_connection:0.0.1
+        env:
+        - name: API_SERVER_ADDR
+          value: 10.55.240.1:443
+        - name: DNS_TEST_DOMAIN
+          value: metadata.google.internal
+        ports:
+        - name: http
+          containerPort: 8090
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+        resources:
+          requests:
+            cpu: 20m
+          limits:
+            cpu: 100m
