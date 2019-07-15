@@ -24,7 +24,7 @@ spec:
         image: alantang888/check_api_server_connection:0.0.1
         env:
         - name: API_SERVER_ADDR
-          value: 10.55.240.1:443
+          value: KUBERNETES_SERVICE_HOST
         - name: DNS_TEST_DOMAIN
           value: metadata.google.internal
         ports:

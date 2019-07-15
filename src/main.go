@@ -41,6 +41,10 @@ func main() {
 	apiServerAddr = os.Getenv("API_SERVER_ADDR")
 	dnsTestDomain = os.Getenv("DNS_TEST_DOMAIN")
 
+	if apiServerAddr == "KUBERNETES_SERVICE_HOST" {
+		apiServerAddr = os.Getenv("KUBERNETES_SERVICE_HOST")
+	}
+
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	log.Printf("Application started. API_SERVER_ADDR: %s, DNS_TEST_DOMAIN:%s\n", apiServerAddr, dnsTestDomain)
