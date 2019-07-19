@@ -15,22 +15,26 @@ var dnsTestDomain string
 const API_SERVER_URL = "https://%s/api/v1"
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := http.Get(fmt.Sprintf(API_SERVER_URL, apiServerAddr))
-	if err != nil {
-		message := fmt.Sprintf("Connect API server error. Message: %s\n", err.Error())
-		log.Println(message)
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, message)
-		return
+	if apiServerAddr != "" {
+		_, err := http.Get(fmt.Sprintf(API_SERVER_URL, apiServerAddr))
+		if err != nil {
+			message := fmt.Sprintf("Connect API server error. Message: %s\n", err.Error())
+			log.Println(message)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, message)
+			return
+		}
 	}
 
-	_, err = net.LookupIP(dnsTestDomain)
-	if err != nil {
-		message := fmt.Sprintf("Query DNS %s error. Message: %s\n", dnsTestDomain, err.Error())
-		log.Println(message)
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, message)
-		return
+	if dnsTestDomain != "" {
+		_, err := net.LookupIP(dnsTestDomain)
+		if err != nil {
+			message := fmt.Sprintf("Query DNS %s error. Message: %s\n", dnsTestDomain, err.Error())
+			log.Println(message)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, message)
+			return
+		}
 	}
 
 	log.Println("ok")
