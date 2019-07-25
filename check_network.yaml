@@ -21,7 +21,7 @@ spec:
         value: infra
       containers:
       - name: check-network-connection
-        image: alantang888/check_api_server_connection:0.0.1
+        image: alantang888/check_api_server_connection:0.0.4
         env:
         - name: HTTP_TEST_URL
           value: KUBERNETES_SERVICE_HOST

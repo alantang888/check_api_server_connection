@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -17,7 +18,16 @@ const API_SERVER_URL = "https://%s/api/v1"
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	if httpTestUrl != "" {
-		_, err := http.Get(httpTestUrl)
+		//_, err := http.Get(httpTestUrl)
+		u, _ := url.ParseRequestURI(httpTestUrl)
+		urlStr := fmt.Sprintf("%v", u)
+		req, _ := http.NewRequest("GET", urlStr, nil)
+
+		tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		cli := &http.Client{Transport: tr}
+		response, err := cli.Do(req)
+		req.Close = true
+
 		if err != nil {
 			message := fmt.Sprintf("Connect API server error. Message: %s\n", err.Error())
 			log.Println(message)
@@ -28,6 +38,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		response.Body.Close()
 	}
 
 	if dnsTestDomain != "" {
