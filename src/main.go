@@ -49,7 +49,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	httpTestUrl = os.Getenv("HTTP_SERVER_ADDR")
+	httpTestUrl = os.Getenv("HTTP_TEST_URL")
 	dnsTestDomain = os.Getenv("DNS_TEST_DOMAIN")
 
 	if httpTestUrl == "KUBERNETES_SERVICE_HOST" {

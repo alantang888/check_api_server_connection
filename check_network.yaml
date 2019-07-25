@@ -23,13 +23,13 @@ spec:
       - name: check-network-connection
         image: alantang888/check_api_server_connection:0.0.1
         env:
-        - name: API_SERVER_ADDR
+        - name: HTTP_TEST_URL
           value: KUBERNETES_SERVICE_HOST
         - name: DNS_TEST_DOMAIN
           value: metadata.google.internal
         ports:
         - name: http
-          containerPort: 8090
+          containerPort: 8080
         readinessProbe:
           httpGet:
             path: /health
