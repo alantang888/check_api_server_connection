@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 )
 
 var httpTestUrl string
@@ -25,6 +26,38 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 		tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 		cli := &http.Client{Transport: tr}
+
+		var STRESS int
+		if os.Getenv("STRESS") == "" {
+			STRESS = 10
+		} else {
+			concurrency, err := strconv.Atoi(os.Getenv("SENTINEL_DETECT_ERROR_THRESHOLD"))
+			if err != nil {
+				STRESS = 10
+			} else {
+				STRESS = concurrency
+			}
+		}
+
+		for i := 0; i < STRESS; i++ {
+			go func() {
+				req, _ := http.NewRequest("GET", urlStr, nil)
+				response, err := cli.Do(req)
+				req.Close = true
+
+				if err != nil {
+					message := fmt.Sprintf("[thread] Connect server error. Message: %s\n", err.Error())
+					log.Println(message)
+					//w.WriteHeader(http.StatusInternalServerError)
+					//fmt.Fprintln(w, message)
+					if exitOnError {
+						os.Exit(1)
+					}
+					return
+				}
+				response.Body.Close()
+			}()
+		}
 		response, err := cli.Do(req)
 		req.Close = true
 
